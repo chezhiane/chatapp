@@ -11,7 +11,7 @@ export class ChatService
     private _contact: BehaviorSubject<Contact> = new BehaviorSubject(null);
     private _contacts: BehaviorSubject<Contact[]> = new BehaviorSubject(null);
     private _profile: BehaviorSubject<Profile> = new BehaviorSubject(null);
-
+    product: any;
     /**
      * Constructor
      */
@@ -135,7 +135,8 @@ export class ChatService
     {   
         console.log('inside get by chat id')
         return this._httpClient.get<Chat>('api/apps/chat/chat', {params: {id}}).pipe(
-        //return this._httpClient.get<Chat>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', {params: {id}}).pipe(
+       // return this._httpClient.get<Chat>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', {params: {id}}).pipe(
+       // return this._httpClient.get<Chat>('https://2sdr7cfqdf.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', {params: {id}}).pipe(
             map((chat) =>
             {
                 // Update the chat
@@ -157,19 +158,74 @@ export class ChatService
         );
     }
 
+    sendMessageToServer(message: string, chatId: string): Observable<any> {
+        
+        /*
+        const newItem = {
+          chatId: chatId,
+          message: message
+        };
+        */
+        const newItem = {
+            enaikoChatId: chatId,
+            msg: message,
+            msgType:'C',
+            src:'web',
+            isMine: true
+          };
+        console.log('inside service call',newItem)
+        //return this._httpClient.post<any>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+        return this._httpClient.post<any>('https://2sdr7cfqdf.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+      }
+    /*
+            enaikoChatId: this.userId, // Use the userId obtained from the route
+             isMine: true,
+             msg: this.message,
+             msgType:'C',
+             src:'web'
+    */
+     
     /**
      * Update chat
      *
      * @param id
      * @param chat
+     * @returns {Promise<any>}
      */
-    updateChat(id: string, chat: Chat): Observable<Chat>
+    //updateChat(id: string, chat: Chat): Observable<Chat>
+    //updateChat(id: string, chat: Chat): Observable<Chat>
+    //updateChat(id: string, chat: Chat)
+   
+    updateChat(id: string, message: string): Promise<any> 
+    
+        {   
+            
+            //console.log("params id3:" + this.routeParams.id);
+            return new Promise(async (resolve, reject) => {
+                try {
+                  // Retrieve the ID token
+                
+          
+                  // Make the HTTP request to the specified API endpoint
+                  //const response = await this._httpClient.post<any[]>('https://mx38b2hrua.execute-api.us-east-1.amazonaws.com/stg/domain/' {}).toPromise();
+                 // this.product = response;
+                  //this.onProductChanged.next(this.product);
+                  //resolve(response);
+                } catch (error) {
+                  console.error('Error fetching products:', error);
+                  reject(error);
+                }
+              });   
+       }
+    /*
     {   
         console.log('inside updatechat service id',id)
-        console.log('inside updatechat service chat',chat)
+        console.log('inside updatechat service chat',message)
+        return message
+        /*
         return this.chats$.pipe(
             take(1),
-            //const response = await this._httpClient.post<any[]>('https://mx38b2hrua.execute-api.us-east-1.amazonaws.com/stg/domain', newItem,{ headers: headers }).toPromise();
+            //const response = await this._httpClient.post<any[]>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem,{ headers: headers }).toPromise();
             switchMap(chats => this._httpClient.patch<Chat>('api/apps/chat/chat', {
                 id,
                 chat,
@@ -202,7 +258,10 @@ export class ChatService
                 )),
             )),
         );
+        
     }
+
+    */
 
     /**
      * Reset the selected chat

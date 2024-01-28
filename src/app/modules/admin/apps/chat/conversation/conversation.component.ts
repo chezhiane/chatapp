@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { ChatService } from 'app/modules/admin/apps/chat/chat.service';
 import { Chat } from 'app/modules/admin/apps/chat/chat.types';
@@ -33,7 +34,7 @@ export class ConversationComponent implements OnInit, OnDestroy
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-
+    userId: string;
     /**
      * Constructor
      */
@@ -42,6 +43,7 @@ export class ConversationComponent implements OnInit, OnDestroy
         private _chatService: ChatService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _ngZone: NgZone,
+        private _activatedRoute: ActivatedRoute // Inject ActivatedRoute here
     )
     {
     }
@@ -91,6 +93,12 @@ export class ConversationComponent implements OnInit, OnDestroy
     ngOnInit(): void
     {
         // Chat
+        this._activatedRoute.params.subscribe(params => {
+          this.userId = params['id'];
+          console.log('User ID from route:', this.userId);
+      
+          // Rest of your logic...
+        });
         this._chatService.chat$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((chat: Chat) =>
@@ -98,7 +106,7 @@ export class ConversationComponent implements OnInit, OnDestroy
                 this.chat = chat;
                 console.log('comp chat',chat)
                 //test start
-                console.log('this.messages', this.messages);
+                console.log('chat.messages', chat.messages);
                 //test stop
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -125,7 +133,7 @@ export class ConversationComponent implements OnInit, OnDestroy
     }
 
   
-
+    /*
       sendMessage() {
         console.log('send message was clicked',this.message)
         if (this.message.trim()) {
@@ -145,7 +153,63 @@ export class ConversationComponent implements OnInit, OnDestroy
           );
         }
       }
+     */
+    
+      sendMessage() {
+        console.log('send message was clicked', this.message);
+        if (this.message.trim()) {
+          // Immediately display the user's message
+          /*
+          const userMessage = {
+           // id:'dsds11',
+           // chatId:'ff6bc7f1-449a-4419-af62-b89ce6cae0aa',
+           chatId: this.userId, // Use the userId obtained from the route
+            isMine: true,
+            value: this.message,
+            //createdAt:'2024-01-14T19:04:38.445-05:00' // Adjust date format as needed 2024-01-14T19:04:38.445-05:00 - new Date() 
+          };
+          */
+          const userMessage = {
+            enaikoChatId: this.userId, // Use the userId obtained from the route
+             isMine: true,
+             value: this.message,
+             msgType:'C',
+             src:'web'
+           };
+          //id?: string; chatId?: string; contactId?: string; isMine?: boolean; value?: string; createdAt?: string; 
 
+          console.log('userMessage',userMessage);
+          this.chat.messages.push(userMessage);
+      
+         // Send the message to the server
+          this._chatService.sendMessageToServer(this.message, this.userId).subscribe(response => {
+            // Handle server response here
+            // For example, display bot's response
+            console.log('came here',response)
+            
+            response.botReply=response.message + 'bot resp'
+            const botResponse = {
+              enaikoChatId: this.userId,
+              isMine: false,
+              value: response.botReply, // Assuming response contains botReply
+              msgType:'C',
+              src:'web'
+            };
+            console.log('botResponse',botResponse)
+            //this.message = '';
+            this._changeDetectorRef.markForCheck();
+            this.chat.messages.push(botResponse);
+            
+            
+          }, error => {
+            console.error('Error sending message', error);
+          });
+          // Clear the message input
+          this.message = '';
+          this._changeDetectorRef.markForCheck();
+        }
+      }
+      
     /**
      * On destroy
      */
@@ -195,7 +259,7 @@ export class ConversationComponent implements OnInit, OnDestroy
         this.chat.muted = !this.chat.muted;
         console.log('in toggleMuteNotification')
         // Update the chat on the server
-        this._chatService.updateChat(this.chat.id, this.chat).subscribe();
+        //this._chatService.updateChat(this.chat.id, this.chat).subscribe();
     }
 
     /**
