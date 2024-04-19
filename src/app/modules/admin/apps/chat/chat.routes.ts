@@ -57,7 +57,7 @@ export default [
                         component: EmptyConversationComponent,
                     },
                     {
-                        path     : ':id',
+                        path     : ':id/:TenantId/:projectId',
                         component: ConversationComponent,
                         resolve  : {
                             conversation: conversationResolver,

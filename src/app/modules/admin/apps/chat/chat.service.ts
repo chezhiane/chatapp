@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+//import { Chat, Contact, Profile } from 'app/modules/admin/apps/chat/chat.types';
 import { Chat, Contact, Profile } from 'app/modules/admin/apps/chat/chat.types';
 import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
 
@@ -126,37 +127,42 @@ export class ChatService
         );
     }
 
+
+    /*
+       
+*/
     /**
      * Get chat
      *
      * @param id
      */
-    getChatById(id: string): Observable<any>
-    {   
-        console.log('inside get by chat id')
-        return this._httpClient.get<Chat>('api/apps/chat/chat', {params: {id}}).pipe(
-       // return this._httpClient.get<Chat>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', {params: {id}}).pipe(
-       // return this._httpClient.get<Chat>('https://2sdr7cfqdf.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', {params: {id}}).pipe(
-            map((chat) =>
-            {
-                // Update the chat
-                console.log('chat',chat)
-                this._chat.next(chat);
-
-                // Return the chat
-                return chat;
-            }),
-            switchMap((chat) =>
-            {
-                if ( !chat )
-                {
-                    return throwError('Could not found chat with id of ' + id + '!');
-                }
-
-                return of(chat);
-            }),
-        );
-    }
+     getChatById(id: string): Observable<any>
+     {   
+         console.log('inside get by chat id',id)
+         //return this._httpClient.get<Chat>('api/apps/chat/chat', {params: {id}}).pipe(
+         //return this._httpClient.get<Chat>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', {params: {id}}).pipe(
+         return this._httpClient.get<Chat>('https://2sdr7cfqdf.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChats', {params: {id}}).pipe(
+             map((chat) =>
+             {
+             
+ 
+                 console.log('chat',chat)
+                 this._chat.next(chat);
+ 
+                 // Return the chat
+                 return chat;
+             }),
+             switchMap((chat) =>
+             {
+                 if ( !chat )
+                 {
+                     return throwError('Could not found chat with id of ' + id + '!');
+                 }
+ 
+                 return of(chat);
+             }),
+         );
+     }
 
     sendMessageToServer(message: string, chatId: string): Observable<any> {
         
@@ -176,6 +182,8 @@ export class ChatService
         console.log('inside service call',newItem)
         //return this._httpClient.post<any>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
         return this._httpClient.post<any>('https://2sdr7cfqdf.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+        //return this._httpClient.post<any>('https://fugwj8eqik.execute-api.us-east-1.amazonaws.com/stg/chat/ff6bc7f1-449a-4419-af62-b89ce6cae0aa', newItem);
+        
       }
     /*
             enaikoChatId: this.userId, // Use the userId obtained from the route
@@ -184,7 +192,73 @@ export class ChatService
              msgType:'C',
              src:'web'
     */
-     
+    sendAgentMessageToServer(message: string, chatId: string, mine: boolean): Observable<any> {
+        
+        /*
+        const newItem = {
+          chatId: chatId,
+          message: message
+        };
+        */
+        console.log('mine',mine)
+        const newItem = {
+            enaikoChatId: chatId,
+            msg: message,
+            msgType:'A',
+            src:'web',
+            isMine: mine
+          };
+        console.log('inside service call',newItem)
+        //return this._httpClient.post<any>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+        return this._httpClient.post<any>('https://2sdr7cfqdf.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+        //return this._httpClient.post<any>('https://fugwj8eqik.execute-api.us-east-1.amazonaws.com/stg/chat/ff6bc7f1-449a-4419-af62-b89ce6cae0aa', newItem);
+        
+      }
+
+
+      sendAgentRespMessageToServer(message: string, chatId: string, mine: boolean): Observable<any> {
+        
+        /*
+        const newItem = {
+          chatId: chatId,
+          message: message
+        };
+        */
+        console.log('mine',mine)
+        const newItem = {
+            enaikoChatId: chatId,
+            msg: message,
+            msgType:'AR',
+            src:'web',
+            isMine: mine
+          };
+        console.log('inside service call',newItem)
+        //return this._httpClient.post<any>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+        return this._httpClient.post<any>('https://2sdr7cfqdf.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+        //return this._httpClient.post<any>('https://fugwj8eqik.execute-api.us-east-1.amazonaws.com/stg/chat/ff6bc7f1-449a-4419-af62-b89ce6cae0aa', newItem);
+        
+      }
+
+      SubmitChatContactServ(emailAddress: string, phoneNumber: string, appointmentDate: string ): Observable<any> {
+        
+        /*
+        const newItem = {
+          chatId: chatId,
+          message: message
+        };
+        */
+        console.log('mine')
+        const newItem = {
+            emailAddress: emailAddress,
+            phoneNumber: phoneNumber,
+            appointmentDate:appointmentDate
+          }; 
+       // console.log('inside service call',newItem)
+        //return this._httpClient.post<any>('https://gmb5mklxy1.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+        return this._httpClient.post<any>('https://2sdr7cfqdf.execute-api.us-east-1.amazonaws.com/default/enaikoHomeChat', newItem);
+        //return this._httpClient.post<any>('https://fugwj8eqik.execute-api.us-east-1.amazonaws.com/stg/chat/ff6bc7f1-449a-4419-af62-b89ce6cae0aa', newItem);
+        
+      }
     /**
      * Update chat
      *

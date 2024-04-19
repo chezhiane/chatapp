@@ -35,6 +35,7 @@ export interface Contact
     };
 }
 
+
 export interface Chat
 {
     id?: string;
@@ -53,3 +54,5 @@ export interface Chat
         createdAt?: string;
     }[];
 }
+
+
