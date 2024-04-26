@@ -43,6 +43,7 @@ export class ConversationComponent implements OnInit, OnDestroy
     emailAddress: string = '';
     phoneNumber: string = '';
     appointmentDate: Date | null = null;
+    chatmessageBox: boolean = true; 
     //
     /**
      * Constructor
@@ -116,7 +117,7 @@ export class ConversationComponent implements OnInit, OnDestroy
           console.log('User ID from route:', this.projectId);
           localStorage.setItem('projectId', this.projectId);
           localStorage.removeItem('provideNonAvailable');
-          //localStorage.removeItem('passToLiveAgentTime')
+          localStorage.removeItem('LiveAgentConversationClose')
           
         });
 
@@ -126,13 +127,7 @@ export class ConversationComponent implements OnInit, OnDestroy
         {
             this.chat = chat;
             console.log('comp chat',this.chat)
-            //this.chat.messages = this.messages
-            
-           // this.chat.messages = this.messages
-            //test start
             console.log('chat.messages', chat.messages);
-            //test stop
-            // Mark for check
             this._changeDetectorRef.markForCheck();
         });
 
@@ -222,14 +217,16 @@ export class ConversationComponent implements OnInit, OnDestroy
                         // Store the current time as the pass to live agent time
                         const currentTime = new Date().getTime();
                         localStorage.setItem('passToLiveAgentTime', currentTime.toString());
-
+                        console.log('joy')
                         // Check after 3 minutes if liveAgentID is populated
                         setTimeout(() => {
                             // Assuming liveAgentID is stored in localStorage (adjust according to your application's logic)
                             const liveAgentID = localStorage.getItem('liveAgentID');
-                            
-                            if (!liveAgentID) {
+                            const LiveAgentConversationClose = localStorage.getItem('LiveAgentConversationClose');
+                            //LiveAgentConversationClose
+                            if ((!liveAgentID) && (!LiveAgentConversationClose)) {
                                 // Set provideNonAvailable flag if liveAgentID is not populated
+                                this.chatmessageBox = false;
                                 localStorage.setItem('provideNonAvailable', 'true');
                                 localStorage.removeItem('passedToLiveagent');
                                 localStorage.removeItem('QuestionPassedOverToAgent');
@@ -267,10 +264,6 @@ export class ConversationComponent implements OnInit, OnDestroy
         } else {
             // Directly push the message to the screen without sending to the server
             // Check if WebSocket is already defined and connection is open
-            //if (this.webSocket && this.webSocket.readyState === WebSocket.OPEN) {
-            //    console.log('WebSocket is already open.');
-                //return;
-            //}
             if (!this.webSocket || this.webSocket.readyState !== WebSocket.OPEN) {
                 console.log('WebSocket is not open or not defined.');
                 console.log('bef connect sessionID:', this.userId);
@@ -308,14 +301,6 @@ export class ConversationComponent implements OnInit, OnDestroy
                             src: 'web'
                         };
                         this.chat.messages.push(AgentResponse);
-                        //push to database
-                        //push it this._chatService.sendMessageToServer(this.message, this.userId).subscribe(response => {})
-                         //push to database
-                        this._chatService.sendAgentRespMessageToServer(message.message, message.clientsession, false).subscribe(response => {
-                        console.log('res 10',response)
-                        })
-                        this.playPingSound()
-                        this._changeDetectorRef.markForCheck();
                         if (message.message === 'Conversation is closed'){
                             // The specific message is received, proceed to delete localStorage items
                             localStorage.removeItem('liveAgentID');
@@ -325,10 +310,22 @@ export class ConversationComponent implements OnInit, OnDestroy
                             localStorage.removeItem('passToLiveAgentTime')
                             // Additional logic to handle the conversation closure can be added here
                             console.log('Conversation is closed. Local storage items cleared.');
+            
+                            localStorage.setItem('LiveAgentConversationClose', 'true');
                             // Disconnect from WebSocket
                             this.disconnect();
 
                         }
+                        //push to database
+                        //push it this._chatService.sendMessageToServer(this.message, this.userId).subscribe(response => {})
+                         //push to database
+                        
+                        this._chatService.sendAgentRespMessageToServer(message.message, message.clientsession, false).subscribe(response => {
+                        console.log('res 10',response)
+                        })
+                        this.playPingSound()
+                        this._changeDetectorRef.markForCheck();
+                        
                     }
                     else {
                         console.log('WebSocket error message',event);
