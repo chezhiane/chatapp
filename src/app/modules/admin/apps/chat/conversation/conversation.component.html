@@ -92,11 +92,13 @@
                            
                         </ng-container>
                         <!-- This show only when there is no agent picking up the call -->
+                        <!--Plan for showing other sol for now 
+                        <a href="https://calendly.com/chezhian-gp2m/30min">Book appointment!</a>
+                        -->
                         <div *ngIf="showSignOffForm">
                             <div style="max-width: 500px; margin: auto;margin-top: 20px; padding: 20px; border: 2px solid #ccc; border-radius: 10px; background-color: white; box-shadow: 0 5px 10px rgba(0,0,0,0.3);">
                         
                                 <div class="p-4">
-                                
                                     <mat-form-field appearance="outline" floatLabel="always" >
                                         <mat-label>Email</mat-label>
                                         <input matInput placeholder="Email" [(ngModel)]="emailAddress" required /> </mat-form-field>
@@ -107,6 +109,7 @@
                                 </div>
                 
                                 <!-- Optional Calendar for Scheduling -->
+                                <!--https://calendly.com/chezhian-gp2m/30min-->
                                 <div class="p-4">
                                     <mat-form-field class="w-full" appearance="outline" floatLabel="always" >
                                         <mat-label>Choose a date for appointment</mat-label>
@@ -124,7 +127,9 @@
                                     By sending this message, you expressly consent to receive communications from us. You may opt out at any time.
                                 </div>
                                 </div>
+                                
                             </div>
+
                     </div>
                 </div>
 
